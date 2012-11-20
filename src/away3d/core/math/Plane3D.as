@@ -1,8 +1,10 @@
 package away3d.core.math
 {
-	import away3d.arcane;
-
+	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	
+	import away3d.arcane;
+	import away3d.containers.View3D;
 
 	use namespace arcane;
 
@@ -125,6 +127,27 @@ package away3d.core.math
 				return c*p.z - d;
             else
 				return a*p.x + b*p.y + c*p.z - d;
+		}
+		
+		public function getCurrentIntersection(pt: Point, view: View3D) : Vector3D {
+			var direction:Vector3D = view.unproject(pt.x, pt.y);
+			var origin:Vector3D = new Vector3D(view.camera.x, view.camera.y, view.camera.z, 1);
+			direction = direction.subtract(origin);
+			direction.normalize();
+			return intersects(origin, direction);
+		}
+		
+		public function intersects(S: Vector3D, V: Vector3D) : Vector3D {
+			var L:Vector3D = new Vector3D(a, b, c, d);
+			var ldotV:Number = L.x * V.x + L.y * V.y + L.z * V.z + L.w * V.w;
+			var ldotS:Number = L.x * S.x + L.y * S.y + L.z * S.z + L.w * S.w;
+			//Vector is parallel to plane, they won't intersect, sad trombone sound
+			if(ldotV == 0) {
+				return null;
+			}
+			var t:Number = ldotS / ldotV;
+			V.scaleBy(t);
+			return S.add(V);
 		}
 
 		/**

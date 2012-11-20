@@ -1,6 +1,8 @@
 package away3d.loaders.parsers
 {
-	import away3d.materials.utils.DefaultMaterialManager;
+	import flash.net.URLRequest;
+	import flash.utils.ByteArray;
+	
 	import away3d.arcane;
 	import away3d.core.base.Geometry;
 	import away3d.core.base.SubGeometry;
@@ -11,14 +13,12 @@ package away3d.loaders.parsers
 	import away3d.library.assets.IAsset;
 	import away3d.loaders.misc.ResourceDependency;
 	import away3d.loaders.parsers.utils.ParserUtil;
+	import away3d.materials.ColorMaterial;
 	import away3d.materials.TextureMaterial;
 	import away3d.materials.methods.BasicSpecularMethod;
-	import away3d.materials.ColorMaterial;
+	import away3d.materials.utils.DefaultMaterialManager;
 	import away3d.textures.BitmapTexture;
 	import away3d.textures.Texture2DBase;
-	
-	import flash.net.URLRequest;
-	import flash.utils.ByteArray;
 
 	use namespace arcane;
 	
@@ -57,9 +57,9 @@ package away3d.loaders.parsers
 		 * @param uri The url or id of the data or file to be parsed.
 		 * @param extra The holder for extra contextual data that the parser might need.
 		 */
-		public function OBJParser(scale:Number = 1)
+		public function OBJParser(scale:Number = 1, format: String = ParserDataFormat.PLAIN_TEXT)
 		{
-			super(ParserDataFormat.PLAIN_TEXT);
+			super(format);
 			_scale = scale;
 		}
 		
