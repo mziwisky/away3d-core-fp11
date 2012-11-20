@@ -1,12 +1,15 @@
 package away3d.loaders.parsers
 
 {
-	import away3d.arcane;
-	import away3d.textures.BitmapTexture;
 	import flash.display.Bitmap;
 	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.utils.ByteArray;
+	
+	import away3d.arcane;
+	import away3d.textures.BitmapTexture;
+	import away3d.tools.utils.TextureUtils;
+	import flash.display.BitmapData;
 
 	use namespace arcane;
 
@@ -106,7 +109,8 @@ package away3d.loaders.parsers
 		 */
 		private function onLoadComplete(event : Event) : void
 		{
-			var asset : BitmapTexture = new BitmapTexture(Bitmap(_loader.content).bitmapData);
+			var bmp:BitmapData = TextureUtils.adjustToValidSize(Bitmap(_loader.content).bitmapData);
+			var asset : BitmapTexture = new BitmapTexture(bmp);
 			_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onLoadComplete);
 			_doneParsing = true;
 			finalizeAsset(asset, _fileName);

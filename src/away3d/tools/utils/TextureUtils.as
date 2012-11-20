@@ -1,6 +1,7 @@
 package away3d.tools.utils
 {
 	import flash.display.BitmapData;
+	import flash.geom.Matrix;
 
 	public class TextureUtils
 	{
@@ -11,6 +12,18 @@ package away3d.tools.utils
 			if (bitmapData == null) return true;
 
 			return isDimensionValid(bitmapData.width) && isDimensionValid(bitmapData.height);
+		}
+		
+		public static function adjustToValidSize(bitmapData: BitmapData) : BitmapData {
+			if(!isBitmapDataValid(bitmapData)) {
+				var scaledWidth:Number = getBestPowerOf2(bitmapData.width);
+				var scaledHeight:Number = getBestPowerOf2(bitmapData.height);
+				var result:BitmapData = new BitmapData(scaledWidth, scaledHeight, true, 0x00000000);
+				result.draw(bitmapData, new Matrix(scaledWidth / bitmapData.width, 0, 0, scaledHeight / bitmapData.height));
+				bitmapData.dispose();
+				return result;
+			}
+			return bitmapData;
 		}
 
 		public static function isDimensionValid(d : uint) : Boolean
