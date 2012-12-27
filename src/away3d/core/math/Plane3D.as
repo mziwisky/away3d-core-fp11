@@ -161,6 +161,7 @@ package away3d.core.math
 		
 		public function getCurrentIntersection(pt: Point, view: View3D) : Vector3D {
 			var direction:Vector3D = view.unproject(pt.x, pt.y);
+			//var direction:Vector3D = view.getRay(pt.x, pt.y);
 			var origin:Vector3D = new Vector3D(view.camera.x, view.camera.y, view.camera.z, 1);
 			direction = direction.subtract(origin);
 			direction.normalize();
