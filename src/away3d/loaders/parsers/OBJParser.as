@@ -1,5 +1,7 @@
 package away3d.loaders.parsers
 {
+	import flash.net.URLRequest;
+	
 	import away3d.arcane;
 	import away3d.core.base.CompactSubGeometry;
 	import away3d.core.base.Geometry;
@@ -17,8 +19,6 @@ package away3d.loaders.parsers
 	import away3d.materials.utils.DefaultMaterialManager;
 	import away3d.textures.Texture2DBase;
 	import away3d.tools.utils.GeomUtil;
-	
-	import flash.net.URLRequest;
 
 	use namespace arcane;
 	
@@ -57,9 +57,9 @@ package away3d.loaders.parsers
 		 * @param uri The url or id of the data or file to be parsed.
 		 * @param extra The holder for extra contextual data that the parser might need.
 		 */
-		public function OBJParser(scale:Number = 1)
+		public function OBJParser(scale:Number = 1, format: String = ParserDataFormat.PLAIN_TEXT)
 		{
-			super(ParserDataFormat.PLAIN_TEXT);
+			super(format);
 			_scale = scale;
 		}
 		
