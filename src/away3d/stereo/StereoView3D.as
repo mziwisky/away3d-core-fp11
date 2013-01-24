@@ -89,7 +89,7 @@ package away3d.stereo
 					_stage3DProxy._context3D.present();
 				
 				// fire collected mouse events
-				_mouse3DManager.fireMouseEvents();
+				_mouse3DManager.fireMouseEvents(this);
 			}
 			else {
 				_camera = _stereoCam;

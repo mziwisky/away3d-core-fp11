@@ -604,7 +604,7 @@
 			_scene.traversePartitions(_entityCollector);
 
 			// update picking
-			_mouse3DManager.updateCollider(this);
+			//_mouse3DManager.updateCollider(this);
 
 			if (_requireDepthRender)
 				renderSceneDepthToTexture(_entityCollector);
@@ -627,12 +627,14 @@
 
 			}
 			if (!_shareContext) stage3DProxy.present();
-
+			
+			// fire collected mouse events
+			_mouse3DManager.fireMouseEvents(this);
+			
+			
 			// clean up data for this render
 			_entityCollector.cleanUp();
 
-			// fire collected mouse events
-			_mouse3DManager.fireMouseEvents();
 		}
 
 		protected function updateGlobalPos() : void
