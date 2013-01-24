@@ -209,6 +209,7 @@
 			var clone : Mesh = new Mesh(geometry, _material);
 			clone.transform = transform;
 			clone.pivotPoint = pivotPoint;
+			clone.mouseEnabled = mouseEnabled;
 			clone.partition = partition;
 			clone.bounds = _bounds.clone();
 			clone.name = name;

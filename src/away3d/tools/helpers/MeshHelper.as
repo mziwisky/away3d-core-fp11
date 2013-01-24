@@ -1,23 +1,24 @@
 package away3d.tools.helpers
 {
-	import away3d.core.base.ISubGeometry;
-	import away3d.materials.utils.DefaultMaterialManager;
-	import away3d.arcane;
-	import away3d.containers.ObjectContainer3D;
-	import away3d.core.base.Geometry;
-	import away3d.core.base.Object3D;
-	import away3d.core.base.SubGeometry;
-	import away3d.core.base.data.Vertex;
-	import away3d.core.base.data.UV;
-	import away3d.entities.Mesh;
-	import away3d.materials.MaterialBase;
-	import away3d.materials.TextureMaterial;
-	import away3d.textures.BitmapTexture;
-	import away3d.tools.utils.Bounds;
-	 
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	import flash.utils.Dictionary;
+	
+	import away3d.arcane;
+	import away3d.containers.ObjectContainer3D;
+	import away3d.core.base.CompactSubGeometry;
+	import away3d.core.base.Geometry;
+	import away3d.core.base.ISubGeometry;
+	import away3d.core.base.Object3D;
+	import away3d.core.base.SubGeometry;
+	import away3d.core.base.data.UV;
+	import away3d.core.base.data.Vertex;
+	import away3d.entities.Mesh;
+	import away3d.materials.MaterialBase;
+	import away3d.materials.TextureMaterial;
+	import away3d.materials.utils.DefaultMaterialManager;
+	import away3d.textures.BitmapTexture;
+	import away3d.tools.utils.Bounds;
 
 	use namespace arcane;
 	
@@ -115,11 +116,11 @@ package away3d.tools.helpers
 			var holder:Vector3D = new Vector3D();
 			var yind:uint;
 			var zind:uint;
-			var subGeom:SubGeometry;
+			var subGeom:CompactSubGeometry;
 			var updateNormals:Boolean;
 			
-			for (var i :uint = 0; i<numSubGeoms; ++i){
-					subGeom = SubGeometry(geometries[i]);
+			for (var i :uint = 0; i<numSubGeoms; ++i) {
+					subGeom = CompactSubGeometry(geometries[i]);
 					vertices = subGeom.vertexData;
 					normals = subGeom.vertexNormalData;
 					verticesLength = vertices.length;
@@ -145,8 +146,8 @@ package away3d.tools.helpers
 							normals[zind] = holder.z;
 						}
 					}
-					subGeom.updateVertexData(vertices);
-					if(updateNormals) subGeom.updateVertexNormalData(normals);
+					//subGeom.updateVertexData(vertices);
+					//if(updateNormals) subGeom.updateVertexNormalData(normals);
 			}
 			mesh.rotationX = mesh.rotationY = mesh.rotationZ = 0; 
 		}

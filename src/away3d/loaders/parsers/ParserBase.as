@@ -217,6 +217,7 @@ package away3d.loaders.parsers
 		{
 			_parsingFailure = b;
 		}
+		
 		public function get parsingFailure() : Boolean
 		{
 			return _parsingFailure;

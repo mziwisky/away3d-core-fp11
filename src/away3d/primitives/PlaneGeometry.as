@@ -161,7 +161,7 @@ package away3d.primitives
 				for (var xi : uint = 0; xi <= _segmentsW; ++xi) {
 					x = (xi/_segmentsW-.5)*_width;
 					y = (yi/_segmentsH-.5)*_height;
-
+					
 					data[index++] = x;
 					if (_yUp) {
 						data[index++] = 0;
@@ -171,7 +171,7 @@ package away3d.primitives
 						data[index++] = y;
 						data[index++] = 0;
 					}
-
+					
 					data[index++] = 0;
 					if (_yUp) {
 						data[index++] = 1;
@@ -181,14 +181,14 @@ package away3d.primitives
 						data[index++] = 0;
 						data[index++] = -1;
 					}
-
+					
 					data[index++] = 1;
 					data[index++] = 0;
 					data[index++] = 0;
-
+					
 					index += skip;
-
-
+					
+					
 					// add vertex with same position, but with inverted normal & tangent
 					if (_doubleSided) {
 						for (var i : int = 0; i < 3; ++i) {
@@ -205,18 +205,18 @@ package away3d.primitives
 						}
 						index +=skip;
 					}
-
+					
 					if (xi != _segmentsW && yi != _segmentsH) {
 						base = xi + yi*tw;
 						var mult : int = _doubleSided? 2 : 1;
-
+						
 						indices[numIndices++] = base*mult;
 						indices[numIndices++] = (base + tw)*mult;
 						indices[numIndices++] = (base + tw + 1)*mult;
 						indices[numIndices++] = base*mult;
 						indices[numIndices++] = (base + tw + 1)*mult;
 						indices[numIndices++] = (base + 1)*mult;
-
+						
 						if(_doubleSided) {
 							indices[numIndices++] = (base + tw + 1)*mult + 1;
 							indices[numIndices++] = (base + tw)*mult + 1;
@@ -228,7 +228,7 @@ package away3d.primitives
 					}
 				}
 			}
-
+			
 			target.updateData(data);
 			target.updateIndexData(indices);
 		}
@@ -242,24 +242,24 @@ package away3d.primitives
 			var stride:uint = target.UVStride;
 			var numUvs : uint = (_segmentsH + 1) * (_segmentsW + 1) * stride;
 			var skip:uint = stride - 2;
-
+			
 			if (_doubleSided) numUvs *= 2;
-
+			
 			if (target.UVData && numUvs == target.UVData.length)
 				data = target.UVData;
 			else {
 				data = new Vector.<Number>(numUvs, true);
 				invalidateGeometry();
 			}
-
+			
 			var index : uint = target.UVOffset;
-
+			
 			for (var yi : uint = 0; yi <= _segmentsH; ++yi) {
 				for (var xi : uint = 0; xi <= _segmentsW; ++xi) {
 					data[index++] = xi/_segmentsW;
 					data[index++] = 1 - yi/_segmentsH;
 					index += skip;
-
+					
 					if (_doubleSided) {
 						data[index++] = xi/_segmentsW;
 						data[index++] = 1 - yi/_segmentsH;
@@ -267,7 +267,7 @@ package away3d.primitives
 					}
 				}
 			}
-
+			
 			target.updateData(data);
 		}
 	}
