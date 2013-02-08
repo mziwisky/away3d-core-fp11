@@ -138,8 +138,7 @@
 					v0.y = v1.y = (hs/_segmentsH-.5)*_height;
 					updateOrAddSegment(index++, v0, v1);
 				}
-			}
-
+			} 
 			else if (_orientation == ORIENTATION_XZ) {
 				v0.z = hh; v0.y = 0;
 				v1.z = -hh; v1.y = 0;

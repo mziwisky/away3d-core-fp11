@@ -50,8 +50,8 @@ package away3d.core.render
 		protected var _textureRatioX : Number = 1;
 		protected var _textureRatioY : Number = 1;
 
-        private var _snapshotBitmapData:BitmapData;
-        private var _snapshotRequired:Boolean;
+		private var _snapshotBitmapData:BitmapData;
+		private var _snapshotRequired:Boolean;
 
 		private var _clearOnRender : Boolean = true;
 
@@ -273,12 +273,12 @@ package away3d.core.render
 			//line required for correct rendering when using away3d with starling. DO NOT REMOVE UNLESS STARLING INTEGRATION IS RETESTED!
 			_context.setDepthTest(false, Context3DCompareMode.LESS_EQUAL);
 			
-			if ( !_shareContext ) {
+			//if ( !_shareContext ) {
 				if( _snapshotRequired && _snapshotBitmapData ) {
 					_context.drawToBitmapData(_snapshotBitmapData);
 					_snapshotRequired = false;
 				}
-			}
+			//}
 			_stage3DProxy.scissorRect = null;
 		}
 

@@ -536,7 +536,7 @@
 			// No reason trying to configure back buffer if there is no context available.
 			// Doing this anyway (and relying on _stage3DProxy to cache width/height for 
 			// context does get available) means usesSoftwareRendering won't be reliable.
-			if (_stage3DProxy.context3D && !_shareContext) {
+			if (_stage3DProxy.context3D &&  !_shareContext) {
 				if( _width && _height ){
 					// Backbuffers are limited to 2048x2048 in software mode and
 					// trying to configure the backbuffer to be bigger than that

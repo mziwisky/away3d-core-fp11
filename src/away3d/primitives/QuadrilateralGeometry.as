@@ -26,7 +26,7 @@ package away3d.primitives
 		 */
 		protected override function buildGeometry(target : CompactSubGeometry) : void
 		{
-			var numVerts : uint = 4;
+			var numVerts : uint = 8;
 			var data : Vector.<Number>;
 			var indices : Vector.<uint>;
 			var stride:uint = target.vertexStride;
@@ -37,7 +37,7 @@ package away3d.primitives
 			}
 			else {
 				data = new Vector.<Number>(numVerts * stride, true);
-				indices = new Vector.<uint>(6, true);
+				indices = new Vector.<uint>(12, true);
 				invalidateUVs();
 			}
 			numVerts = 0;
@@ -49,8 +49,21 @@ package away3d.primitives
 				data[index++] = pt.z;
 				data[index++] = 0;
 				data[index++] = 0;
+				data[index++] = -1;
 				data[index++] = 1;
+				data[index++] = 0;				
+				data[index++] = 0;
+				index += skip;
+			}
+			for(i = 0; i < 4; i++) {
+				pt = pts[i]; 
+				data[index++] = pt.x;
+				data[index++] = pt.y;
+				data[index++] = pt.z;
+				data[index++] = 0;
+				data[index++] = 0;
 				data[index++] = 1;
+				data[index++] = -1;
 				data[index++] = 0;				
 				data[index++] = 0;
 				index += skip;
@@ -61,6 +74,12 @@ package away3d.primitives
 			indices[3] = 0;
 			indices[4] = 2;
 			indices[5] = 3;
+			indices[6] = 4;
+			indices[7] = 5;
+			indices[8] = 6;
+			indices[9] = 4;
+			indices[10] = 6;
+			indices[11] = 7;
 			target.updateData(data);
 			target.updateIndexData(indices);
 		}
@@ -80,6 +99,18 @@ package away3d.primitives
 			}
 			
 			var index : uint = target.UVOffset;
+			data[index++] = 0;
+			data[index++] = 0;
+			index += skip;
+			data[index++] = 1;
+			data[index++] = 0;
+			index += skip;
+			data[index++] = 1;
+			data[index++] = 1;
+			index += skip;
+			data[index++] = 0;
+			data[index++] = 1;
+			index += skip;
 			data[index++] = 0;
 			data[index++] = 0;
 			index += skip;
