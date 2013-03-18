@@ -6,7 +6,7 @@ package away3d.primitives
 	use namespace arcane;
 
 	/**
-	 * A UV Cylinder primitive mesh.
+	 * A Cylinder primitive mesh.
 	 */
 	public class CylinderGeometry extends PrimitiveBase
 	{
@@ -103,28 +103,56 @@ package away3d.primitives
 
 			// evaluate revolution steps
 			var revolutionAngleDelta:Number = 2 * Math.PI / _segmentsW;
+			
+			var comp1 :Number, comp2 :Number;
+			var startIndex:uint;
+			var t1:Number, t2:Number;
+			var numvert:uint = 0;
 
 			// top
 			if (_topClosed && _topRadius > 0) {
 
 				z = -0.5 * _height;
-
+				startIndex = numvert;
+				
 				for (i = 0; i <= _segmentsW; ++i) {
 					// central vertex
-					if(_yUp)
-						addVertex(0, -z, 0,   0, 1, 0,   1, 0, 0);
+					if(_yUp){
+						t1 = 1;
+						t2 = 0;
+						comp1 = -z;
+						comp2 = 0;
+					} else {
+						t1 = 0;
+						t2 = -1;
+						comp1 = 0;
+						comp2 = z;
+					}
+					
+					if (i == _segmentsW)
+						addVertex(	0, _rawVertexPositions[startIndex+1], _rawVertexPositions[startIndex+2], 0, t1, t2,   1, 0, 0);
 					else
-						addVertex(0, 0, z,   0, 0, -1,   1, 0, 0);
-
+						addVertex(0, comp1, comp2,   0, t1, t2,   1, 0, 0);
+					
 					// revolution vertex
 					revolutionAngle = i * revolutionAngleDelta;
 					x = _topRadius * Math.cos(revolutionAngle);
 					y = _topRadius * Math.sin(revolutionAngle);
-					if(_yUp)
-						addVertex(x, -z, y,   0, 1, 0,   1, 0, 0);
+					
+					if(_yUp){
+						comp1 = -z;
+						comp2 = y;
+					} else {
+						comp1 = y;
+						comp2 = z;
+					}
+					
+					if (i == _segmentsW)
+						addVertex(	_rawVertexPositions[startIndex+3], _rawVertexPositions[startIndex+4], _rawVertexPositions[startIndex+5], 0, t1, t2,   1, 0, 0);
 					else
-						addVertex(x, y, z,   0, 0, -1,   1, 0, 0);
-
+						addVertex(x, comp1, comp2,   0, t1, t2,   1, 0, 0);
+					
+					numvert+=6;
 					if(i > 0) // add triangle
 						addTriangleClockWise(_nextVertexIndex - 1, _nextVertexIndex - 3, _nextVertexIndex - 2);
 				}
@@ -136,23 +164,46 @@ package away3d.primitives
 			if (_bottomClosed && _bottomRadius > 0) {
 
 				z = 0.5 * _height;
-
+				startIndex = numvert;
+				
 				for (i = 0; i <= _segmentsW; ++i)
 				{
-					// central vertex
-					if(_yUp)
-						addVertex(0, -z, 0,   0, -1, 0,   1, 0, 0);
+					if(_yUp){
+						t1 = -1;
+						t2 = 0;
+						comp1 = -z;
+						comp2 = 0;
+					} else {
+						t1 = 0;
+						t2 = 1;
+						comp1 = 0;
+						comp2 = z;
+					}
+					
+					if (i == _segmentsW)
+						addVertex(	0, _rawVertexPositions[startIndex+1], _rawVertexPositions[startIndex+2], 0, t1, t2,   1, 0, 0);
 					else
-						addVertex(0, 0, z,   0, 0, 1,   1, 0, 0);
-
+						addVertex(0, comp1, comp2,   0, t1, t2,   1, 0, 0);
+					 
 					// revolution vertex
 					revolutionAngle = i * revolutionAngleDelta;
 					x = _bottomRadius * Math.cos(revolutionAngle);
 					y = _bottomRadius * Math.sin(revolutionAngle);
-					if(_yUp)
-						addVertex(x, -z, y,   0, -1, 0,   1, 0, 0);
+					
+					if(_yUp){
+						comp1 = -z;
+						comp2 = y;
+					} else {
+						comp1 = y;
+						comp2 = z;
+					}
+					
+					if (i == _segmentsW)
+						addVertex(	_rawVertexPositions[startIndex+3], _rawVertexPositions[startIndex+4], _rawVertexPositions[startIndex+5], 0, t1, t2,   1, 0, 0);
 					else
-						addVertex(x, y, z,   0, 0, 1,   1, 0, 0);
+						addVertex(x, comp1, comp2,   0, t1, t2,   1, 0, 0);
+					 
+					numvert+=6;
 
 					if(i > 0) // add triangle
 						addTriangleClockWise(_nextVertexIndex - 2, _nextVertexIndex - 3, _nextVertexIndex - 1);
@@ -168,8 +219,7 @@ package away3d.primitives
 			dr = (_bottomRadius - _topRadius);
 			latNormElev = dr / _height;
 			latNormBase = (latNormElev==0)? 1 : _height / dr;
-			
-
+			 
 			// lateral surface
 			if(_surfaceClosed)
 			{
@@ -180,6 +230,8 @@ package away3d.primitives
 				{
 					radius = _topRadius - ((j / _segmentsH) * (_topRadius - _bottomRadius));
 					z = -(_height / 2) + (j / _segmentsH * _height);
+					
+					startIndex = numvert;
 
 					for(i = 0; i <= _segmentsW; ++i)
 					{
@@ -190,18 +242,32 @@ package away3d.primitives
 						na0 = latNormBase * Math.cos(revolutionAngle);
 						na1 = latNormBase * Math.sin(revolutionAngle);
 						
-						if(_yUp)
-							addVertex(x, -z, y,
-									  na0, latNormElev, na1,
-									  na1, 0, -na0);
-						else
-							addVertex(x, y, z,
-									  na0, na1, latNormElev,
-									  na1, -na0, 0);
-
+						if(_yUp){
+							t1 = 0;
+							t2 = -na0;
+							comp1 = -z;
+							comp2 = y;
+						} else {
+							t1 = -na0;
+							t2 = 0;
+							comp1 = y;
+							comp2 = z;
+						}
+					
+						if (i == _segmentsW) {
+							addVertex(	_rawVertexPositions[startIndex], _rawVertexPositions[startIndex+1], _rawVertexPositions[startIndex+2],
+									  		na0, latNormElev, na1,
+									  		na1, t1, t2);
+						} else {
+							addVertex(	x, comp1, comp2,
+									  		na0, na1, latNormElev, 
+									  		na1, t1, t2);
+						}
+						
+						numvert+=3;
+						 
 						// close triangle
-						if(i > 0 && j > 0)
-						{
+						if(i > 0 && j > 0) {
 							a = _nextVertexIndex - 1; // current
 							b = _nextVertexIndex - 2; // previous
 							c = b - _segmentsW - 1; // previous of last level
