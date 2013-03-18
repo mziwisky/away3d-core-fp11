@@ -6,7 +6,7 @@ package away3d.primitives
 	use namespace arcane;
 
 	/**
-	 * A UV Cylinder primitive mesh.
+	 * A TorusGeometry primitive mesh.
 	 */
 	public class TorusGeometry extends PrimitiveBase
 	{
@@ -31,15 +31,15 @@ package away3d.primitives
 								   tx:Number, ty:Number, tz:Number):void
 		{
 			var compVertInd:uint = _nextVertexIndex * 3; // current component vertex index
-			_rawVertexPositions[compVertInd]     = px;
-			_rawVertexPositions[compVertInd + 1] = py;
-			_rawVertexPositions[compVertInd + 2] = pz;
-			_rawVertexNormals[compVertInd]       = nx;
-			_rawVertexNormals[compVertInd + 1]   = ny;
-			_rawVertexNormals[compVertInd + 2]   = nz;
-			_rawVertexTangents[compVertInd]      = tx;
-			_rawVertexTangents[compVertInd + 1]  = ty;
-			_rawVertexTangents[compVertInd + 2]  = tz;
+			_rawVertexPositions[compVertInd]     		= px;
+			_rawVertexPositions[compVertInd + 1] 	= py;
+			_rawVertexPositions[compVertInd + 2] 	= pz;
+			_rawVertexNormals[compVertInd]       		= nx;
+			_rawVertexNormals[compVertInd + 1]		= ny;
+			_rawVertexNormals[compVertInd + 2]  	= nz;
+			_rawVertexTangents[compVertInd]      		= tx;
+			_rawVertexTangents[compVertInd + 1]		= ty;
+			_rawVertexTangents[compVertInd + 2]		= tz;
 			_nextVertexIndex++;
 		}
 
@@ -76,8 +76,8 @@ package away3d.primitives
 				_rawVertexNormals = target.vertexNormalData;
 				_rawVertexTangents = target.vertexTangentData;
 				_rawIndices = target.indexData;
-			}
-			else {
+				
+			} else {
 				var numVertComponents:uint = _numVertices * 3;
 				_rawVertexPositions = new Vector.<Number>(numVertComponents, true);
 				_rawVertexNormals = new Vector.<Number>(numVertComponents, true);
@@ -88,15 +88,19 @@ package away3d.primitives
 			// evaluate revolution steps
 			var revolutionAngleDeltaR:Number = 2 * Math.PI / _segmentsR;
 			var revolutionAngleDeltaT:Number = 2 * Math.PI / _segmentsT;
-
+			var comp1 :Number, comp2 :Number;
+			var t1:Number, t2:Number, n1:Number, n2:Number;
+			var numVerts:uint = 0;
+			var startIndex:uint;
 			// surface
 			var a:uint, b:uint, c:uint, d:uint, length:Number;
 
 			for(j = 0; j <= _segmentsT; ++j)
 			{
+				startIndex = numVerts;
+				
 				for(i = 0; i <= _segmentsR; ++i)
 				{
-					// revolution vertex
 					revolutionAngleR = i * revolutionAngleDeltaR;
 					revolutionAngleT = j * revolutionAngleDeltaT;
 					
@@ -104,24 +108,42 @@ package away3d.primitives
 					nx = length * Math.cos(revolutionAngleR);
 					ny = length * Math.sin(revolutionAngleR);
 					nz = Math.sin(revolutionAngleT);
-					
+					 
 					x = _radius * Math.cos(revolutionAngleR) + _tubeRadius * nx;
 					y = _radius * Math.sin(revolutionAngleR) + _tubeRadius * ny;
-					z = _tubeRadius * nz;
+					z =  (j == _segmentsT)? 0 : _tubeRadius * nz;
+ 					 
+					if(_yUp){
+						n1 = -nz;
+						n2 = ny;
+						t1 = 0;
+						t2 = (length? nx/length : x/_radius);
+						comp1 = -z;
+						comp2 = y;
+						
+					} else {
+						n1 = ny;
+						n2 = nz;
+						t1 = (length? nx/length : x/_radius);
+						t2 = 0;
+						comp1 = y;
+						comp2 = z;
+					}
 					
+					if (i == _segmentsR) {
+						addVertex(		x, _rawVertexPositions[startIndex+1], _rawVertexPositions[startIndex+2],
+								  			nx, n1, n2,
+								  			-(length? ny/length : y/_radius), t1, t2);
+					} else {
+						addVertex(		x, comp1, comp2,
+								  			nx, n1, n2,
+								  			-(length? ny/length : y/_radius), t1, t2);
+					}
 					
-					if(_yUp)
-						addVertex(x, -z, y,
-								  nx, -nz, ny,
-								  -(length? ny/length : y/_radius), 0, (length? nx/length : x/_radius));
-					else
-						addVertex(x, y, z,
-								  nx, ny, nz,
-								  -(length? ny/length : y/_radius), (length? nx/length : x/_radius), 0);
+					numVerts+=3;
 
 					// close triangle
-					if(i > 0 && j > 0)
-					{
+					if(i > 0 && j > 0){
 						a = _nextVertexIndex - 1; // current
 						b = _nextVertexIndex - 2; // previous
 						c = b - _segmentsR - 1; // previous of last level
@@ -253,6 +275,7 @@ package away3d.primitives
 		 * @param segmentsT Defines the number of vertical segments that make up the torus.
 		 * @param yUp Defines whether the torus poles should lay on the Y-axis (true) or on the Z-axis (false).
 		 */
+		
 		public function TorusGeometry(radius : Number = 50, tubeRadius : Number = 50, segmentsR : uint = 16, segmentsT : uint = 8, yUp : Boolean = true)
 		{
 			super();
