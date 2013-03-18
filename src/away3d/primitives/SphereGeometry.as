@@ -1,8 +1,8 @@
-﻿package away3d.primitives
+package away3d.primitives
 {
 	import away3d.arcane;
 	import away3d.core.base.SubGeometry;
-	
+	 
 	use namespace arcane;
 
 	/**
@@ -14,7 +14,7 @@
 		private var _segmentsW : uint;
 		private var _segmentsH : uint;
 		private var _yUp : Boolean;
-
+		
 		/**
 		 * Creates a new Sphere object.
 		 * @param radius The radius of the sphere.
@@ -45,23 +45,31 @@
 			var numVerts : uint = (_segmentsH + 1) * (_segmentsW + 1);
 
 			if (numVerts == target.numVertices) {
+				
 				vertices = target.vertexData;
 				vertexNormals = target.vertexNormalData;
 				vertexTangents = target.vertexTangentData;
 				indices = target.indexData;
-			}
-			else {
+				
+			} else {
+				
 				vertices = new Vector.<Number>(numVerts * 3, true);
 				vertexNormals = new Vector.<Number>(numVerts * 3, true);
 				vertexTangents = new Vector.<Number>(numVerts * 3, true);
 				indices = new Vector.<uint>((_segmentsH - 1) * _segmentsW * 6, true);
 			}
-
+			
 			numVerts = 0;
+			
+			var a : uint, b : uint, c : uint, d : uint;
+			var comp1 :Number, comp2 :Number; 
+			
 			for (j = 0; j <= _segmentsH; ++j) {
+				
 				var horangle : Number = Math.PI * j / _segmentsH;
 				var z : Number = -_radius * Math.cos(horangle);
 				var ringradius : Number = _radius * Math.sin(horangle);
+				var startIndex:uint = numVerts;
 
 				for (i = 0; i <= _segmentsW; ++i) {
 					var verangle : Number = 2 * Math.PI * i / _segmentsW;
@@ -69,47 +77,55 @@
 					var y : Number = ringradius * Math.sin(verangle);
 					var normLen : Number = 1 / Math.sqrt(x * x + y * y + z * z);
 					var tanLen : Number = Math.sqrt(y * y + x * x);
-
-					if (_yUp) {
+					
+					comp1 = (_yUp)? -z : y;
+					comp2 = (_yUp)? y : z;
+					 
+					if (i == _segmentsW) {
+						vertexNormals[numVerts] = vertexNormals[startIndex] + (x * normLen) * .5 ;
+						vertexTangents[numVerts] = tanLen > .007 ? -y / tanLen : 1;
+						vertices[numVerts++] = vertices[startIndex];
+						vertexNormals[numVerts] = vertexNormals[startIndex+1] +( comp1 * normLen) * .5;
+						vertexTangents[numVerts] = 0;
+						vertices[numVerts++] = vertices[startIndex+1];
+						vertexNormals[numVerts] = vertexNormals[startIndex+2] +(comp2 * normLen) * .5;
+						vertexTangents[numVerts] = tanLen > .007 ? x / tanLen : 0;
+						vertices[numVerts++] = vertices[startIndex+2];
+						
+					} else {
 						vertexNormals[numVerts] = x * normLen;
 						vertexTangents[numVerts] = tanLen > .007 ? -y / tanLen : 1;
-						vertices[numVerts++] = x;
-						vertexNormals[numVerts] = -z * normLen;
+						vertices[numVerts++] =  x;
+						vertexNormals[numVerts] =  comp1 * normLen;
 						vertexTangents[numVerts] = 0;
-						vertices[numVerts++] = -z;
-						vertexNormals[numVerts] = y * normLen;
+						vertices[numVerts++] = comp1;
+						vertexNormals[numVerts] = comp2 * normLen;
 						vertexTangents[numVerts] = tanLen > .007 ? x / tanLen : 0;
-						vertices[numVerts++] = y;
+						vertices[numVerts++] = comp2;
 					}
-					else {
-						vertexNormals[numVerts] = x * normLen;
-						vertexTangents[numVerts] = tanLen > .007 ? -y / tanLen : 1;
-						vertices[numVerts++] = x;
-						vertexNormals[numVerts] = y * normLen;
-						vertexTangents[numVerts] = tanLen > .007 ? x / tanLen : 0;
-						vertices[numVerts++] = y;
-						vertexNormals[numVerts] = z * normLen;
-						vertexTangents[numVerts] = 0;
-						vertices[numVerts++] = z;
-					}
-
+ 
 					if (i > 0 && j > 0) {
-						var a : int = (_segmentsW + 1) * j + i;
-						var b : int = (_segmentsW + 1) * j + i - 1;
-						var c : int = (_segmentsW + 1) * (j - 1) + i - 1;
-						var d : int = (_segmentsW + 1) * (j - 1) + i;
-
+						
+						a = (_segmentsW + 1) * j + i;
+						b = (_segmentsW + 1) * j + i - 1;
+						c = (_segmentsW + 1) * (j - 1) + i - 1;
+						d = (_segmentsW + 1) * (j - 1) + i;
+						 
 						if (j == _segmentsH) {
+							startIndex = ((_segmentsW + 1) * j) *3;
+							vertices[numVerts-3] = vertices[startIndex];
+							vertices[numVerts-2] = vertices[startIndex+1];
+							vertices[numVerts-1] = vertices[startIndex+2];
 							indices[triIndex++] = a;
 							indices[triIndex++] = c;
 							indices[triIndex++] = d;
-						}
-						else if (j == 1) {
+							 
+						} else if (j == 1) {
 							indices[triIndex++] = a;
 							indices[triIndex++] = b;
 							indices[triIndex++] = c;
-						}
-						else {
+						
+						} else {
 							indices[triIndex++] = a;
 							indices[triIndex++] = b;
 							indices[triIndex++] = c;
@@ -120,7 +136,7 @@
 					}
 				}
 			}
-
+			
 			target.updateVertexData(vertices);
 			target.updateVertexNormalData(vertexNormals);
 			target.updateVertexTangentData(vertexTangents);
@@ -148,7 +164,7 @@
 					uvData[numUvs++] = j / _segmentsH;
 				}
 			}
-
+			
 			target.updateUVData(uvData);
 		}
 
