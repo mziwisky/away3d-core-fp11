@@ -126,8 +126,8 @@ package away3d.core.managers
 			event.altKey = sourceEvent.altKey;
 			event.shiftKey = sourceEvent.shiftKey;
 			event.delta = sourceEvent.delta;
-			event.screenX = sourceEvent.localX;
-			event.screenY = sourceEvent.localY;
+			event.screenX = sourceEvent.stageX;
+			event.screenY = sourceEvent.stageY;
 
 			collider ||= _collidingObject;
 
@@ -192,7 +192,8 @@ package away3d.core.managers
 		}
 
 		private function onMouseDown(event : MouseEvent) : void
-		{
+		{ 
+			_activeView = (event.currentTarget as View3D);
 			 queueDispatch(_mouseDown, event);
 			_updateDirty = true;
 		}
