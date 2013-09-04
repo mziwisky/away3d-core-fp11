@@ -8,25 +8,21 @@ package away3d.core.math
 	
 	public class Plane3D
 	{
-		/**
-		 * The A coefficient of this plane. (Also the x dimension of the plane normal)
-		 */
-		public var a:Number;
+		private var _a : Number;
+		private var _b : Number;
+		private var _c : Number;
+		private var _d : Number;
 		
-		/**
-		 * The B coefficient of this plane. (Also the y dimension of the plane normal)
-		 */
-		public var b:Number;
+		private var _maginv:Number; /* Keep track of inverse of (a,b,c) magnitude for distance measurements */
+		private var maginvStale:Boolean = true;
 		
-		/**
-		 * The C coefficient of this plane. (Also the z dimension of the plane normal)
-		 */
-		public var c:Number;
-		
-		/**
-		 * The D coefficient of this plane. (Also the inverse dot product between normal and point)
-		 */
-		public var d:Number;
+		private function get maginv(): Number {
+			if (maginvStale) {
+				_maginv = 1 / Math.sqrt(a*a + b*b + c*c);
+				maginvStale = false;
+			}
+			return _maginv;
+		}
 		
 		arcane var _alignment:int;
 		
@@ -37,7 +33,7 @@ package away3d.core.math
 		public static const ALIGN_XZ_AXIS:int = 3;
 		
 		/**
-		 * Create a Plane3D with ABCD coefficients
+		 * Create a Plane3D with ABCD coefficients (Ax + By + Cz = D)
 		 */
 		public function Plane3D(a:Number = 0, b:Number = 0, c:Number = 0, d:Number = 0)
 		{
@@ -114,11 +110,13 @@ package away3d.core.math
 		 */
 		public function normalize():Plane3D
 		{
-			var len:Number = 1/Math.sqrt(a*a + b*b + c*c);
-			a *= len;
-			b *= len;
-			c *= len;
-			d *= len;
+			var scale: Number = maginv;
+			a *= scale;
+			b *= scale;
+			c *= scale;
+			d *= scale;
+			_maginv = 1;
+			maginvStale = false;
 			return this;
 		}
 		
@@ -130,13 +128,13 @@ package away3d.core.math
 		public function distance(p:Vector3D):Number
 		{
 			if (_alignment == ALIGN_YZ_AXIS)
-				return a*p.x - d;
+				return (a*p.x - d)*maginv;
 			else if (_alignment == ALIGN_XZ_AXIS)
-				return b*p.y - d;
+				return (b*p.y - d)*maginv;
 			else if (_alignment == ALIGN_XY_AXIS)
-				return c*p.z - d;
+				return (c*p.z - d)*maginv;
 			else
-				return a*p.x + b*p.y + c*p.z - d;
+				return (a*p.x + b*p.y + c*p.z - d)*maginv;
 		}
 		
 		/**
@@ -150,15 +148,7 @@ package away3d.core.math
 			if (d != d)
 				return PlaneClassification.FRONT;
 			
-			var len:Number;
-			if (_alignment == ALIGN_YZ_AXIS)
-				len = a*p.x - d;
-			else if (_alignment == ALIGN_XZ_AXIS)
-				len = b*p.y - d;
-			else if (_alignment == ALIGN_XY_AXIS)
-				len = c*p.z - d;
-			else
-				len = a*p.x + b*p.y + c*p.z - d;
+			var len : Number = distance(p);
 			
 			if (len < -epsilon)
 				return PlaneClassification.BACK;
@@ -171,6 +161,54 @@ package away3d.core.math
 		public function toString():String
 		{
 			return "Plane3D [a:" + a + ", b:" + b + ", c:" + c + ", d:" + d + "].";
+		}
+		
+		/**
+		 * The A coefficient of this plane. (Also the x dimension of the plane normal)
+		 */
+		public function get a() : Number {
+			return _a;
+		}
+		
+		/**
+		 * The B coefficient of this plane. (Also the y dimension of the plane normal)
+		 */
+		public function get b() : Number {
+			return _b;
+		}
+		
+		/**
+		 * The C coefficient of this plane. (Also the z dimension of the plane normal)
+		 */
+		public function get c() : Number {
+			return _c;
+		}
+		
+		/**
+		 * The D coefficient of this plane. (Also the dot product between normal vector (a,b,c) and any point on plane)
+		 */
+		public function get d() : Number {
+			return _d;
+		}
+		
+		public function set a(a:Number) : void {
+			maginvStale = true;
+			_a = a;
+		}
+		
+		public function set b(b:Number) : void {
+			maginvStale = true;
+			_b = b;
+		}
+		
+		public function set c(c:Number) : void {
+			maginvStale = true;
+			_c = c;
+		}
+		
+		public function set d(d:Number) : void {
+			maginvStale = true;
+			_d = d;
 		}
 	}
 }
