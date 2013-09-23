@@ -1,8 +1,10 @@
 package away3d.core.math
 {
-	import away3d.arcane;
-	
+	import flash.geom.Point;
 	import flash.geom.Vector3D;
+	
+	import away3d.arcane;
+	import away3d.containers.View3D;
 	
 	use namespace arcane;
 	
@@ -156,6 +158,44 @@ package away3d.core.math
 				return PlaneClassification.FRONT;
 			else
 				return PlaneClassification.INTERSECT;
+		}
+		
+		/**
+		 * From the camera location for 'view,' shoot a line through a point, 'pt' -- where does the line hit the plane?
+		 */
+		public function getCurrentIntersection(pt: Point, view: View3D) : Vector3D {
+			var origin:Vector3D = view.unproject(pt.x, pt.y, 0);
+			var direction:Vector3D = view.unproject(pt.x, pt.y, 1);
+			direction = direction.subtract(origin);
+			direction.normalize();
+			return intersects(origin, direction);
+		}
+		
+		public function getCurrentDepthSquared(pt: Point, view: View3D): Number {
+			var isec: Vector3D = getCurrentIntersection(pt, view);
+			var origin: Vector3D = new Vector3D(view.camera.x, view.camera.y, view.camera.z, 1);
+			var diff: Vector3D = isec.subtract(origin);
+			return diff.lengthSquared;
+		}
+		
+		/**
+		 * From a point, S, shoot a line in the direction of a vector, V -- where does the line hit the plane?
+		 * Not finding the plane's intersection with the line that connects two points, S and V, but finding
+		 * its intersection with the line that passes thru a point, S, going in a direction, V.
+		 */
+		public function intersects(S: Vector3D, V: Vector3D) : Vector3D {
+			var ptOnPlane : Vector3D = new Vector3D(a, b, c);
+			ptOnPlane.scaleBy(d*maginv*maginv);
+			var normDotV : Number = a*V.x + b*V.y + c*V.z;
+			// Vector is parallel to plane, they won't intersect at a point, sad trombone sound
+			if (normDotV == 0) {
+				return null;
+			}
+			var linePtToPlanePt : Vector3D = ptOnPlane.subtract(S);
+			var scale : Number = (a*linePtToPlanePt.x + b*linePtToPlanePt.y + c*linePtToPlanePt.z) / normDotV;
+			var scaledV : Vector3D = V.clone();
+			scaledV.scaleBy(scale);
+			return S.add(scaledV);
 		}
 		
 		public function toString():String
