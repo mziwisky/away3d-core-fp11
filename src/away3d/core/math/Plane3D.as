@@ -167,7 +167,6 @@ package away3d.core.math
 			var origin:Vector3D = view.unproject(pt.x, pt.y, 0);
 			var direction:Vector3D = view.unproject(pt.x, pt.y, 1);
 			direction = direction.subtract(origin);
-			direction.normalize();
 			return intersects(origin, direction);
 		}
 		
@@ -196,6 +195,10 @@ package away3d.core.math
 			var scaledV : Vector3D = V.clone();
 			scaledV.scaleBy(scale);
 			return S.add(scaledV);
+		}
+		
+		public function clone(): Plane3D {
+			return new Plane3D(a, b, c, d);
 		}
 		
 		public function toString():String
